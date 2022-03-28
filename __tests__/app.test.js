@@ -12,10 +12,11 @@ beforeEach(() => {
 
   describe('GET /api/topics', () => {
       describe('Functionality', () => {
-        test('Returns an array of topic objects with slug and decription properties', async () => {
-        const response = await request(app)
+        test('Returns an array of topic objects with slug and decription properties', () => {
+        return request(app)
         .get("/api/topics")
         .expect(200)
+        .then((response) => {
             expect(response.body.topics.length).toBe(3);
             response.body.topics.forEach(topic => {
                 expect.objectContaining({
@@ -23,16 +24,17 @@ beforeEach(() => {
                     description: expect.any(String),
                   });
             })
-        
+        })
       })
     })
       describe('Error Handling', () => {
-        test('Returns 404 not found if no topics are found', async () => {
-            const response = await request(app)
+        test('Returns 404 not found if no topics are found', () => {
+            return request(app)
             .get('/api/tpoics')
             .expect(404)
-            
+            .then((response) => {
                 expect(response.body.msg).toBe('Not Found');
+            })
             })
         })
     })
@@ -40,15 +42,16 @@ beforeEach(() => {
 
   describe('GET /api/users', () => {
       describe('Functionality', () => {
-          test('Returns an array of objects with username property', async () => {
-              const response = await request(app)
+          test('Returns an array of objects with username property', () => {
+              return request(app)
               .get('/api/users')
-              .expect(200);
-
-              expect(response.body.usernames.length).toBe(4);
-              response.body.usernames.forEach(username => {
-                  expect.objectContaining({
-                      username: expect.any(String)
+              .expect(200)
+              .then((response) => {
+                  expect(response.body.usernames.length).toBe(4);
+                  response.body.usernames.forEach(username => {
+                      expect.objectContaining({
+                          username: expect.any(String)
+                      })
                   })
               })
           })
