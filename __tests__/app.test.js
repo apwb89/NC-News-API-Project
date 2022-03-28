@@ -1,15 +1,14 @@
 const data = require('../db/data/test-data/index');
 const request = require('supertest');
 const app = require('../app');
-const db = require('../db/seeds/seed');
+const seed = require('../db/seeds/seed');
+const db = require('../db/connection');
 
 beforeEach(() => {
-    return db(data);
+    return seed(data);
   });
 
-  afterAll(() => {
-    if (db.end) db.end();
-  });
+  afterAll(() => db.end());
 
   describe('GET /api/topics', () => {
       describe('Functionality', () => {
