@@ -57,3 +57,36 @@ beforeEach(() => {
           })
       })
   })
+
+  describe('GET /api/article/:article_id', () => {
+    describe('Functionality', () => {
+      test('returns an article object, with author(username), title, article_id, body, topic, created_at, votes', () => {
+          return request(app)
+          .get('/api/article/1')
+          .expect(200)
+          .then((response) => {
+              expect(response.body.article).toEqual({
+                author: 'butter_bridge',
+                  title: 'Living in the shadow of a great man',
+                  article_id: 1,
+                  body: 'I find this existence challenging',
+                  topic: 'mitch', 
+                  created_at: '2020-07-09T20:11:00.000Z',
+                  votes: 100,
+              })
+          
+        })
+      })
+    })
+  
+    describe('Error Handling', () => {
+        test('Returns 404 not found if no topics are found', () => {
+            return request(app)
+            .get('/api/article/222')
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+            })
+            })
+        })
+})
