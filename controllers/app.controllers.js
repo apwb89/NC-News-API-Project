@@ -1,7 +1,10 @@
 const { getAllTopics } = require('../models/app.models');
 
-exports.getTopics = (req, res, next) => {
-    getAllTopics().then((topics) => {
+exports.getTopics = async (req, res, next) => {
+    try {
+        const topics = await getAllTopics();
         res.status(200).send({topics});
-    }).catch(next)
+    } catch(err) {
+        next(err);
+    }
 }
