@@ -16,9 +16,9 @@ beforeEach(() => {
         return request(app)
         .get("/api/topics")
         .expect(200)
-        .then((res) => {
-            expect(res.body.topics.length).toBe(3);
-            res.body.topics.forEach(topic => {
+        .then((response) => {
+            expect(response.body.topics.length).toBe(3);
+            response.body.topics.forEach(topic => {
                 expect.objectContaining({
                     slug: expect.any(String),
                     description: expect.any(String),
@@ -32,9 +32,28 @@ beforeEach(() => {
             return request(app)
             .get('/api/tpoics')
             .expect(404)
-            .then((res) => {
-                expect(res.body.msg).toBe('Not Found');
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+            })
             })
         })
+    })
+  
+
+  describe('GET /api/users', () => {
+      describe('Functionality', () => {
+          test('Returns an array of objects with username property', () => {
+              return request(app)
+              .get('/api/users')
+              .expect(200)
+              .then((response) => {
+                  expect(response.body.usernames.length).toBe(4);
+                  response.body.usernames.forEach(username => {
+                      expect.objectContaining({
+                          username: expect.any(String)
+                      })
+                  })
+              })
+          })
       })
   })
