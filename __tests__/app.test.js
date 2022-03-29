@@ -27,7 +27,6 @@ beforeEach(() => {
         })
       })
     })
-      describe('Error Handling', () => {
         test('Returns 404 not found if no topics are found', () => {
             return request(app)
             .get('/api/tpoics')
@@ -36,7 +35,6 @@ beforeEach(() => {
                 expect(response.body.msg).toBe('Not Found');
             })
             })
-        })
     })
   
 
@@ -78,9 +76,7 @@ beforeEach(() => {
         })
       })
     })
-  
-    describe('Error Handling', () => {
-        test('Returns 404 not found if no topics are found with that id', () => {
+    test('Returns 404 not found if no topics are found with that id', () => {
             return request(app)
             .get('/api/article/222')
             .expect(404)
@@ -97,4 +93,3 @@ beforeEach(() => {
             })
         })
     })
-})
