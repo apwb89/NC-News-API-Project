@@ -34,3 +34,10 @@ exports.getAllArticles = async () => {
   );
   return results.rows;
 };
+
+exports.getCommentsForArticle = async (articleId) => {
+    const results = await db.query(`SELECT comment_id, votes, created_at, author, body 
+    FROM comments WHERE article_id=$1; 
+    `, [articleId])
+        return results.rows;
+    }
