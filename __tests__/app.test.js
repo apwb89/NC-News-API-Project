@@ -19,7 +19,7 @@ beforeEach(() => {
         .then((response) => {
             expect(response.body.topics.length).toBe(3);
             response.body.topics.forEach(topic => {
-                expect.objectContaining({
+                expect(topic).toMatchObject({
                     slug: expect.any(String),
                     description: expect.any(String),
                   });
@@ -49,7 +49,7 @@ beforeEach(() => {
               .then((response) => {
                   expect(response.body.usernames.length).toBe(4);
                   response.body.usernames.forEach(username => {
-                      expect.objectContaining({
+                      expect(username).toMatchObject({
                           username: expect.any(String)
                       })
                   })
@@ -57,3 +57,29 @@ beforeEach(() => {
           })
       })
   })
+
+describe('GET /api/articles', () => {
+    describe('Functionality', () => {
+        test('Returns and array of article objects, with author(username), title, article_id, topic, created_at, votes and comment_count properties, sorted by date desc', () => {
+            return request(app)
+            .get('/api/articles')
+            .expect(200)
+            .then((response) => {
+                expect(response.body.articles.length).toBe(12);
+                response.body.articles.forEach(article => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String), 
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String),
+                        votes: expect.any(Number)
+                        //add comment count after that card is done, realised should have done them in different order
+                    })
+                })
+                expect(response.body.articles).toBeSortedBy('created_at', {
+                    descending: true});
+            })
+        })
+    })
+})
