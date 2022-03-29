@@ -73,8 +73,8 @@ describe('GET /api/articles', () => {
                         topic: expect.any(String),
                         author: expect.any(String),
                         created_at: expect.any(String),
-                        votes: expect.any(Number)
-                        //add comment count after that card is done, realised should have done them in different order
+                        votes: expect.any(Number),
+                        comment_count: expect.any(String)
                     })
                 })
                 expect(response.body.articles).toBeSortedBy('created_at', {
@@ -83,3 +83,4 @@ describe('GET /api/articles', () => {
         })
     })
 })
+

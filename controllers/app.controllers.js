@@ -1,4 +1,4 @@
-const { getAllTopics, getAllUsernames, getAllArticles } = require('../models/app.models');
+const { getAllTopics, getAllUsernames, getAllArticles, getArticleCommentCountsLookupObj } = require('../models/app.models');
 
 exports.getTopics = async (req, res, next) => {
     try {
@@ -26,3 +26,4 @@ exports.getArticles = async (req, res, next) => {
         next(err);
     }
 }
+
