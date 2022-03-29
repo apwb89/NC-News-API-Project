@@ -1,4 +1,5 @@
-const { getAllTopics, getAllUsernames } = require('../models/app.models');
+const { getAllTopics, getAllUsernames, getArticleFromDbById } = require('../models/app.models');
+
 
 exports.getTopics = async (req, res, next) => {
     try {
@@ -13,6 +14,16 @@ exports.getUsernames = async (req, res, next) => {
     try {
         const usernames = await getAllUsernames();
         res.status(200).send({usernames});
+    } catch(err) {
+        next(err);
+    }
+}
+
+exports.getArticleById = async (req, res, next) => {
+    const { article_id } = req.params;
+    try {
+        const article = await getArticleFromDbById(article_id);
+        res.status(200).send({article});
     } catch(err) {
         next(err);
     }
