@@ -153,5 +153,14 @@ describe('GET /api/articles', () => {
                 expect(response.body).toEqual({});
             })
         })
+        test('Returns 400 bad request if a non integer is given as article_id', () => {
+            return request(app)
+            .get('/api/articles/a/comments')
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad Request');
+            })
+        })
     })
 
+    
