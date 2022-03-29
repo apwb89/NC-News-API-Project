@@ -1,5 +1,5 @@
 const { getAllTopics, getAllUsernames, getArticleFromDbById } = require('../models/app.models');
-const { convertTimeStampToDate } = require('../db/helpers/utils');
+
 
 exports.getTopics = async (req, res, next) => {
     try {

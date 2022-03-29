@@ -80,13 +80,21 @@ beforeEach(() => {
     })
   
     describe('Error Handling', () => {
-        test('Returns 404 not found if no topics are found', () => {
+        test('Returns 404 not found if no topics are found with that id', () => {
             return request(app)
             .get('/api/article/222')
             .expect(404)
             .then((response) => {
                 expect(response.body.msg).toBe('Not Found');
             })
+        })
+        test('Returns 400 bad request if a non integer is given as article_id', () => {
+            return request(app)
+            .get('/api/article/bad')
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad Request');
             })
         })
+    })
 })
