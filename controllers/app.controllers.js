@@ -46,11 +46,7 @@ exports.getCommentsForArticleById = async (req, res, next) => {
         const article =  await getArticleFromDbById(article_id);
         if(article) {
             const comments = await getCommentsForArticle(article_id);
-            if(comments.length) {
-                res.status(200).send({comments});
-            } else {
-                res.status(204).send()
-            }
+                res.status(200).send({comments}); 
         }
     } catch(err) {
         next(err);

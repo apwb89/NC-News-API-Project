@@ -145,12 +145,12 @@ describe('GET /api/articles', () => {
                 expect(response.body.msg).toBe('Not Found');
             })
         })
-        test('Returns 204 no content when selecting an article with no comments', ()=> {
+        test('Returns 200 and empty body when selecting an article with no comments', ()=> {
             return request(app)
             .get('/api/articles/2/comments')
-            .expect(204)
+            .expect(200)
             .then((response) => {
-                expect(response.body).toEqual({});
+                expect(response.body.comments).toEqual([]);
             })
         })
         test('Returns 400 bad request if a non integer is given as article_id', () => {
