@@ -1,4 +1,5 @@
-const { getAllTopics, getAllUsernames, getAllArticles, getArticleCommentCountsLookupObj } = require('../models/app.models');
+const { getAllTopics, getAllUsernames, getArticleFromDbById, getAllArticles } = require('../models/app.models');
+
 
 exports.getTopics = async (req, res, next) => {
     try {
@@ -18,11 +19,23 @@ exports.getUsernames = async (req, res, next) => {
     }
 }
 
+
 exports.getArticles = async (req, res, next) => {
     try {
         const articles = await getAllArticles();
         res.status(200).send({articles});
     } catch {
+        next(err);
+    }
+}
+
+
+exports.getArticleById = async (req, res, next) => {
+    const { article_id } = req.params;
+    try {
+        const article = await getArticleFromDbById(article_id);
+        res.status(200).send({article});
+    } catch(err) {
         next(err);
     }
 }
