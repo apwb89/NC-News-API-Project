@@ -59,6 +59,15 @@ exports.sendCommentByArticleId = async(articleId, name, body) => {
     }
 } 
 
+exports.checkUserExistsByName = async (username) => {
+    const user = await db.query(`SELECT * FROM users WHERE username = $1`, [username]);
+    if(user.rows.length) {
+        return Promise.resolve('User Exists');
+    } else {
+        return Promise.reject({status: 404, msg: 'Not Found'});
+    }
+}
+
 exports.removeCommentById = async (commentId) => {
     const checkId = await db.query(`SELECT * FROM comments WHERE comment_id = $1;`, [commentId])
     if(checkId.rows.length) {

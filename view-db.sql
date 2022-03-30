@@ -3,7 +3,6 @@
 
 
 SELECT *
-FROM comments
-WHERE comment_id = 10;
+FROM users;
 
 --$1

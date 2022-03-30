@@ -45,6 +45,14 @@ app.use((err, req, res, next) => {
     }
 })
 
+app.use((err, req, res, next) => {
+    if(err.msg && err.status === 400) {
+        res.status(400).send({msg: err.msg})
+    } else {
+        next(err);
+    }
+})
+
 //default server error
 app.use((err, req, res, next) => {
     console.log(err, '<<<<<<<<<<<<<<<<<<<<<<< err')
