@@ -7,7 +7,8 @@ const {
   sendCommentByArticleId,
   removeCommentById,
   checkUserExistsByName,
-} = require("../models/app.models");
+  updateVotes,
+} = require('../models/app.models');
 
 exports.getTopics = async (req, res, next) => {
   try {
@@ -28,10 +29,15 @@ exports.getUsernames = async (req, res, next) => {
 };
 
 exports.getArticles = async (req, res, next) => {
-  try {
-    const articles = await fetchAllArticles();
+    try {
+        
+    const { sort_by } = req.query;
+    const { order } = req.query;
+    const { topic } = req.query;
+    
+    const articles = await fetchAllArticles(sort_by, order, topic);
     res.status(200).send({ articles });
-  } catch {
+  } catch(err) {
     next(err);
   }
 };
@@ -60,12 +66,17 @@ exports.getCommentsForArticleById = async (req, res, next) => {
 };
 
 exports.postCommentByArticleId = async (req, res, next) => {
-    if(!req.body.name || !req.body.body || typeof req.body.name !== 'string' || typeof req.body.body !== 'string') {
-         return next({status: 400, msg: 'Bad Request'})
-    }    
+  if (
+    !req.body.name ||
+    !req.body.body ||
+    typeof req.body.name !== 'string' ||
+    typeof req.body.body !== 'string'
+  ) {
+    return next({ status: 400, msg: 'Bad Request' });
+  }
 
-    const { name, body } = req.body;
-    const { article_id } = req.params;
+  const { name, body } = req.body;
+  const { article_id } = req.params;
 
   const checkArticleExists = fetchArticleFromDbById(article_id);
   const checkUser = checkUserExistsByName(name);
@@ -81,6 +92,22 @@ exports.postCommentByArticleId = async (req, res, next) => {
       });
     })
     .catch(next);
+};
+
+exports.patchVotesByNum = async (req, res, next) => {
+  try {
+    if (!req.body.inc_votes || typeof req.body.inc_votes !== 'number') {
+      return next({ status: 400, msg: 'Bad Request' });
+    }
+
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+
+    const votedArticle = await updateVotes(article_id, inc_votes);
+    res.status(200).send({ article: votedArticle });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.deleteCommentById = async (req, res, next) => {

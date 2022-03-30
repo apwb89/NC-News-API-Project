@@ -3,6 +3,6 @@
 
 
 SELECT *
-FROM users;
+FROM articles;
 
 --$1
