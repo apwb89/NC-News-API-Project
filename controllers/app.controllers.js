@@ -8,7 +8,19 @@ const {
   removeCommentById,
   checkUserExistsByName,
   updateVotes,
+  fetchAPIInfo
 } = require('../models/app.models');
+
+
+exports.getAPIInfo = async (req, res, next) => {
+  try {
+    const apiInfo = await fetchAPIInfo();
+    const parsedInfo = JSON.parse(apiInfo, null, 2);
+    res.status(200).send({endpoints: parsedInfo})
+  } catch(err) {
+    next(err);
+  }
+}
 
 exports.getTopics = async (req, res, next) => {
   try {

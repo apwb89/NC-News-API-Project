@@ -1,8 +1,14 @@
 const db = require('../db/connection');
+const fs = require('fs/promises');
 const {
   convertTimestampToDate,
   formatComments,
 } = require('../db/helpers/utils');
+
+exports.fetchAPIInfo = async () => {
+  const apiInfo = await fs.readFile(`${__dirname}/../endpoints.json`, 'utf-8');
+  return apiInfo;
+}
 
 exports.fetchAllTopics = async () => {
   const results = await db.query('SELECT * FROM topics;');

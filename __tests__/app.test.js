@@ -8,8 +8,21 @@ beforeEach(() => seed(data));
 
 afterAll(() => db.end());
 
+describe('GET /api', () => {
+  test('Returns JSON object providing info on all endpoints', () => {
+    return request(app)
+    .get('/api')
+    .expect(200)
+    .then((response) => {
+      expect(response.body.endpoints).toMatchObject({
+        "GET /api": expect.any(Object)
+        //need better test ?
+      })
+    })
+  })
+})
+
 describe('GET /api/topics', () => {
-  describe('Functionality', () => {
     test('Returns an array of topic objects with slug and decription properties', () => {
       return request(app)
         .get('/api/topics')
@@ -33,7 +46,6 @@ describe('GET /api/topics', () => {
         expect(response.body.msg).toBe('Not Found');
       });
   });
-});
 
 describe('GET /api/users', () => {
   describe('Functionality', () => {
@@ -408,3 +420,4 @@ describe('PATCH /api/articles/:article_id  -- Votes', () => {
       });
   });
 });
+

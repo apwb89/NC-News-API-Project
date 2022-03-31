@@ -1,12 +1,21 @@
 const express = require('express');
 const app = express();
 
-
-const { getTopics, getUsernames, getArticles, getArticleById, getCommentsForArticleById, postCommentByArticleId, deleteCommentById, patchVotesByNum } = require('./controllers/app.controllers')
-
-
+const {
+  getTopics,
+  getUsernames,
+  getArticles,
+  getArticleById,
+  getCommentsForArticleById,
+  postCommentByArticleId,
+  deleteCommentById,
+  patchVotesByNum,
+  getAPIInfo
+} = require('./controllers/app.controllers');
 
 app.use(express.json());
+
+app.get('/api', getAPIInfo);
 
 app.get('/api/topics', getTopics);
 
@@ -25,40 +34,40 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleId);
 app.delete('/api/comments/:comment_id', deleteCommentById);
 
 app.all('*', (req, res) => {
-    res.status(404).send({msg: 'Not Found'})
-})
+  res.status(404).send({ msg: 'Not Found' });
+});
 
 //code errors
 app.use((err, req, res, next) => {
-    const errorCodes = ['22P02'];
-    if (errorCodes.includes(err.code)) {
-        res.status(400).send({msg: 'Bad Request'})
-    } else {
-       next(err); 
-    }
-})
+  const errorCodes = ['22P02'];
+  if (errorCodes.includes(err.code)) {
+    res.status(400).send({ msg: 'Bad Request' });
+  } else {
+    next(err);
+  }
+});
 
 //custom errors
 app.use((err, req, res, next) => {
-    if(err.msg && err.status === 404) {
-        res.status(404).send({msg: err.msg})
-    } else {
-        next(err);
-    }
-})
+  if (err.msg && err.status === 404) {
+    res.status(404).send({ msg: err.msg });
+  } else {
+    next(err);
+  }
+});
 
 app.use((err, req, res, next) => {
-    if(err.msg && err.status === 400) {
-        res.status(400).send({msg: err.msg})
-    } else {
-        next(err);
-    }
-})
+  if (err.msg && err.status === 400) {
+    res.status(400).send({ msg: err.msg });
+  } else {
+    next(err);
+  }
+});
 
 //default server error
 app.use((err, req, res, next) => {
-    console.log(err, '<<<<<<<<<<<<<<<<<<<<<<< err')
-    res.status(500).send({ msg: 'Internal Server Error' });
+  console.log(err, '<<<<<<<<<<<<<<<<<<<<<<< err');
+  res.status(500).send({ msg: 'Internal Server Error' });
 });
 
 module.exports = app;

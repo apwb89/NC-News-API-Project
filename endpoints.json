@@ -11,12 +11,9 @@
   },
   "GET /api/users": {
     "description": "serves an array of all usernames",
-    "queries": [], 
+    "queries": [],
     "exampleResponse": {
-      "usernames": [
-        { "username": "butter_bridge" },
-        { "username": "lurker" }
-      ]
+      "usernames": [{ "username": "butter_bridge" }, { "username": "lurker" }]
     }
   },
   "GET /api/articles": {
@@ -35,14 +32,77 @@
     }
   },
   "GET /api/articles/:article_id": {
-  }, 
+    "description": "serves an article with article_id matching the path parameter",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "author": "butter_bridge",
+        "title": "Living in the shadow of a great man",
+        "article_id": 1,
+        "body": "I find this existence challenging",
+        "topic": "mitch",
+        "created_at": "2020-07-09T20:11:00.000Z",
+        "votes": 100,
+        "comment_count": "11"
+      }
+    }
+  },
   "PATCH /api/articles/:article_id": {
+    "description": "updates an article with an incremented or decremented vote count and serves the article",
+    "queries": [],
+    "exampleRequestBody": { "inc_votes": 1 },
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author": "butter_bridge",
+        "body": "I find this existence challenging",
+        "created_at": "2020-07-09 21:11:00",
+        "votes": 101
+      }
+    }
   },
   "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of all the comments for the article of given article_id parameter",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 10,
+          "votes": 0,
+          "created_at": "2020-06-20T07:24:00.000Z",
+          "author": "icellusedkars",
+          "body": "git push origin master"
+        },
+        {
+          "comment_id": 11,
+          "votes": 0,
+          "created_at": "2020-09-19T23:10:00.000Z",
+          "author": "icellusedkars",
+          "body": "Ambidextrous marsupial"
+        }
+      ]
+    }
   },
   "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment to the article_id of given parameter and serves that article",
+    "queries": [],
+    "exampleRequestBody": { "name": "butter_bridge", "body": "test" },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 19,
+        "body": "test",
+        "article_id": 4,
+        "author": "butter_bridge",
+        "votes": 0,
+        "created_at": "2022-03-31T13:08:00.592Z"
+      }
+    }
   },
   "DELETE /api/comments/:comment_id": {
-
+    "description": "deletes a comment of the given comment_id parameter",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
