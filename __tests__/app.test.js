@@ -309,7 +309,7 @@ describe('POST /api/articles/:article_id/comments', () => {
 });
 
 describe('DELETE /api/comments/:comment_id', () => {
-  test('Deletes a comment of the given id', async () => {
+  test('Deletes a comment of the given id', () => {
     return request(app)
       .del('/api/comments/10')
       .expect(204)

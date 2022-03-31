@@ -46,7 +46,13 @@ exports.fetchAllArticles = async (
   FULL OUTER JOIN comments 
   ON articles.article_id = comments.article_id`;
 
-  const validTopics = ['mitch', 'cats'];
+  const columnTitleQuery = await db.query(`SELECT * FROM articles;`)
+  const validTopics = [];
+  columnTitleQuery.rows.forEach(article => {
+    if(!validTopics.includes(article.topic)) {
+      validTopics.push(article.topic);
+    }
+  })
 
   if (topic) {
     if (!validTopics.includes(topic)) {

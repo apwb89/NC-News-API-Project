@@ -29,22 +29,18 @@ exports.getUsernames = async (req, res, next) => {
 };
 
 exports.getArticles = async (req, res, next) => {
-    try {
-        
-    const { sort_by } = req.query;
-    const { order } = req.query;
-    const { topic } = req.query;
-    
-      if (order) {
-        const validOrders = ['ASC', 'ASCENDING', 'DESC', 'DESCENDING'];
-        if(!validOrders.includes(order) )
-          return next({status: 400, msg: 'Bad Request'})
-        }
-      
+  try {
+    const { sort_by, order, topic } = req.query;
+
+    if (order) {
+      const validOrders = ['ASC', 'ASCENDING', 'DESC', 'DESCENDING'];
+      if (!validOrders.includes(order))
+        return next({ status: 400, msg: 'Bad Request' });
+    }
 
     const articles = await fetchAllArticles(sort_by, order, topic);
     res.status(200).send({ articles });
-  } catch(err) {
+  } catch (err) {
     next(err);
   }
 };
@@ -62,11 +58,10 @@ exports.getArticleById = async (req, res, next) => {
 exports.getCommentsForArticleById = async (req, res, next) => {
   const { article_id } = req.params;
   try {
-    const article = await fetchArticleFromDbById(article_id);
-    if (article) {
-      const comments = await fetchCommentsForArticle(article_id);
-      res.status(200).send({ comments });
-    }
+    await fetchArticleFromDbById(article_id);
+
+    const comments = await fetchCommentsForArticle(article_id);
+    res.status(200).send({ comments });
   } catch (err) {
     next(err);
   }
