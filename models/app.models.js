@@ -41,18 +41,30 @@ exports.fetchAllArticles = async (
   topic
 ) => {
   let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.body, articles.votes, COUNT(articles.article_id)
-      AS comment_count 
-      FROM articles 
-      FULL OUTER JOIN comments 
-      ON articles.article_id = comments.article_id`;
+  AS comment_count 
+  FROM articles 
+  FULL OUTER JOIN comments 
+  ON articles.article_id = comments.article_id`;
+
+  const validTopics = ['mitch', 'cats'];
 
   if (topic) {
-    query += ` WHERE articles.topic='${topic}'`;
+    if (!validTopics.includes(topic)) {
+      return Promise.reject({ status: 400, msg: 'Bad Request' });
+    } else {
+      query += ` WHERE articles.topic='${topic}'`;
+    }
   }
 
   query += ` GROUP BY articles.article_id`;
 
-  query += ` ORDER BY articles.${sort_by}`;
+  const validSortBy = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes'];
+
+  if(!validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  } else {
+    query += ` ORDER BY articles.${sort_by}`;
+  }
 
   query += ` ${order}`;
 

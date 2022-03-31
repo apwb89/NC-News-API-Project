@@ -35,6 +35,13 @@ exports.getArticles = async (req, res, next) => {
     const { order } = req.query;
     const { topic } = req.query;
     
+      if (order) {
+        const validOrders = ['ASC', 'ASCENDING', 'DESC', 'DESCENDING'];
+        if(!validOrders.includes(order) )
+          return next({status: 400, msg: 'Bad Request'})
+        }
+      
+
     const articles = await fetchAllArticles(sort_by, order, topic);
     res.status(200).send({ articles });
   } catch(err) {

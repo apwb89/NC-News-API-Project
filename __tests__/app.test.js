@@ -54,90 +54,113 @@ describe('GET /api/users', () => {
 });
 
 describe('GET /api/articles', () => {
-    test('Returns and array of article objects, with author(username), title, article_id, topic, created_at, votes and comment_count properties, sorted by date desc', () => {
-      return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response) => {
-          expect(response.body.articles.length).toBe(12);
-          response.body.articles.forEach((article) => {
-            expect(article).toMatchObject({
-              article_id: expect.any(Number),
-              title: expect.any(String),
-              topic: expect.any(String),
-              author: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              comment_count: expect.any(String),
-              body: expect.any(String),
-            });
-          });
-          expect(response.body.articles).toBeSortedBy('created_at', {
-            descending: true,
+  test('Returns and array of article objects, with author(username), title, article_id, topic, created_at, votes and comment_count properties, sorted by date desc', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        response.body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            comment_count: expect.any(String),
+            body: expect.any(String),
           });
         });
-    });
+        expect(response.body.articles).toBeSortedBy('created_at', {
+          descending: true,
+        });
+      });
   });
+});
 
-  describe('GET /api/articles?queries', () => {
-      test('Returns all articles sorted by specified query', () => {
-          return request(app)
-          .get('/api/articles?sort_by=title')
-          .expect(200)
-          .then((response) => {
-              expect(response.body.articles.length).toBe(12);
-              expect(response.body.articles).toBeSortedBy('title', {descending: true}
-              )
-          })
-      })
-      test('sorts in ascending order when passes ASC query', () => {
-          return request(app)
-          .get('/api/articles?order=ASC')
-          .expect(200)
-          .then((response) => {
-              expect(response.body.articles.length).toBe(12);
-              expect(response.body.articles).toBeSortedBy('created_at', {descending: false})
-          })
-      })
-      test('filters by topic given ?topic=... query', () => {
-          return request(app)
-          .get('/api/articles?topic=cats')
-          .expect(200)
-          .then((response) => {
-              expect(response.body.articles.length).toBe(1);
-              expect(response.body.articles[0]).toMatchObject({
-                article_id: 5,
-                title: 'UNCOVERED: catspiracy to bring down democracy',
-                topic: 'cats', 
-                author: 'rogersop',
-              })
-          })
-      })
-      test('filters topicsand sorts in ascending order at the same time', () => {
-        return request(app)
-        .get('/api/articles?topic=mitch&&order=ASC&&sort_by=title')
-        .expect(200)
-        .then((response) => {
-            expect(response.body.articles.length).toBe(11);
-            expect(response.body.articles[0]).toMatchObject({
-              article_id: expect.any(Number),
-              title: expect.any(String),
-              topic: 'mitch', 
-              author: expect.any(String),
-              body: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number)
-            })
-            expect(response.body.articles).toBeSortedBy('title', {descending: false})
-        })
-      })
-      // 400 when topic isnt from strict list(dynamically populate array by making db query?)
-      //400 when order not ASC or DESC
-      //400 when sort_by not from strict table names
-      //more
-
-      
+describe('GET /api/articles?queries', () => {
+  test('Returns all articles sorted by specified query', () => {
+    return request(app)
+      .get('/api/articles?sort_by=title')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        expect(response.body.articles).toBeSortedBy('title', {
+          descending: true,
+        });
+      });
+  });
+  test('sorts in ascending order when passes ASC query', () => {
+    return request(app)
+      .get('/api/articles?order=ASC')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(12);
+        expect(response.body.articles).toBeSortedBy('created_at', {
+          descending: false,
+        });
+      });
+  });
+  test('filters by topic given ?topic=... query', () => {
+    return request(app)
+      .get('/api/articles?topic=cats')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(1);
+        expect(response.body.articles[0]).toMatchObject({
+          article_id: 5,
+          title: 'UNCOVERED: catspiracy to bring down democracy',
+          topic: 'cats',
+          author: 'rogersop',
+        });
+      });
+  });
+  test('filters topicsand sorts in ascending order at the same time', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&&order=ASC&&sort_by=title')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.articles.length).toBe(11);
+        expect(response.body.articles[0]).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: 'mitch',
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+        expect(response.body.articles).toBeSortedBy('title', {
+          descending: false,
+        });
+      });
+  });
+  test('Returns 400 bad request when topic isnt from existing topic lists', () => {
+    return request(app)
+      .get('/api/articles?topic=hats')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+  test('Returns 400 bad request when order is not ASC, DESC, ASCENDING OR DESCENDING', () => {
+    return request(app)
+      .get('/api/articles?topic=mitch&&order=ESC')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
   })
+  test('Returns 400 bad request when sort_by is not from existing column names', () => {
+    return request(app)
+      .get('/api/articles?sort_by=auhtor')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  })
+});
 
 describe('GET /api/articles/:article_id', () => {
   describe('Functionality', () => {
@@ -248,41 +271,41 @@ describe('POST /api/articles/:article_id/comments', () => {
       });
   });
   test('returns 400 bad request if keys are wrong', () => {
-      return request(app)
+    return request(app)
       .post('/api/articles/5/comments')
-      .send({nmae: 'butter_bridge', body: 'test'})
+      .send({ nmae: 'butter_bridge', body: 'test' })
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad Request');
-      })
-  })
+      });
+  });
   test('returns 400 bad request if name key is empty', () => {
     return request(app)
-    .post('/api/articles/5/comments')
-    .send({name: '', body: 'test'})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe('Bad Request');
-    })
-  })
+      .post('/api/articles/5/comments')
+      .send({ name: '', body: 'test' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
   test('returns 400 bad request if body key is empty', () => {
     return request(app)
-    .post('/api/articles/5/comments')
-    .send({name: 'butter_bridge', body: ''})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe('Bad Request');
-    })
-  })
+      .post('/api/articles/5/comments')
+      .send({ name: 'butter_bridge', body: '' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
   test('returns 400 bad request if values are the wrong data type', () => {
     return request(app)
-    .post('/api/articles/5/comments')
-    .send({name: 'butter_bridge', body: 5})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe('Bad Request');
-    })
-  })
+      .post('/api/articles/5/comments')
+      .send({ name: 'butter_bridge', body: 5 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
 });
 
 describe('DELETE /api/comments/:comment_id', () => {
@@ -323,65 +346,65 @@ describe('DELETE /api/comments/:comment_id', () => {
 });
 
 describe('PATCH /api/articles/:article_id  -- Votes', () => {
-    test('accepts an object with inc_votes property and returns the article incremented by the correct value of votes', () => {
-        return request(app)
-        .patch('/api/articles/1')
-        .send({inc_votes: 1})
-        .expect(200)
-        .then((response) => {
-            expect(response.body.article).toMatchObject({
-                article_id: 1,
-                title: 'Living in the shadow of a great man',
-                topic: 'mitch',
-                author: 'butter_bridge',
-                body: 'I find this existence challenging',
-                created_at: expect.any(String),
-                votes: 101
-            })
-        })
-    })
-    test('correctly updates votes when inc_votes is negative', () => {
-        return request(app)
-        .patch('/api/articles/1')
-        .send({inc_votes: -101})
-        .expect(200)
-        .then((response) => {
-            expect(response.body.article).toMatchObject({
-                article_id: 1,
-                title: 'Living in the shadow of a great man',
-                topic: 'mitch',
-                author: 'butter_bridge',
-                body: 'I find this existence challenging',
-                created_at: expect.any(String),
-                votes: -1
-            })
-        })
-    })
-    test('returns 404 not found if article does not exist', () => {
-        return request(app)
-        .patch('/api/articles/100')
-        .send({inc_votes: 1})
-        .expect(404)
-        .then((response) => {
-            expect(response.body.msg).toBe('Not Found')
-        })
-    })
-    test('returns 400 bad request if inc_votes key is missing', () => {
-        return request(app)
-        .patch('/api/articles/1')
-        .send({})
-        .expect(400)
-        .then((response) => {
-            expect(response.body.msg).toBe('Bad Request')
-        })
-    })
-    test('returns 400 bad request if inc_votes value is not a number', () => {
-        return request(app)
-        .patch('/api/articles/1')
-        .send({inc_votes: 'bad'})
-        .expect(400)
-        .then((response) => {
-            expect(response.body.msg).toBe('Bad Request')
-        })
-    })
-})
+  test('accepts an object with inc_votes property and returns the article incremented by the correct value of votes', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: expect.any(String),
+          votes: 101,
+        });
+      });
+  });
+  test('correctly updates votes when inc_votes is negative', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: -101 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          article_id: 1,
+          title: 'Living in the shadow of a great man',
+          topic: 'mitch',
+          author: 'butter_bridge',
+          body: 'I find this existence challenging',
+          created_at: expect.any(String),
+          votes: -1,
+        });
+      });
+  });
+  test('returns 404 not found if article does not exist', () => {
+    return request(app)
+      .patch('/api/articles/100')
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+  test('returns 400 bad request if inc_votes key is missing', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+  test('returns 400 bad request if inc_votes value is not a number', () => {
+    return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 'bad' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+});
