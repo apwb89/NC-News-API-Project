@@ -118,7 +118,7 @@ describe('GET /api/articles?queries', () => {
   });
   test('filters topicsand sorts in ascending order at the same time', () => {
     return request(app)
-      .get('/api/articles?topic=mitch&&order=ASC&&sort_by=title')
+      .get('/api/articles?topic=mitch&order=ASC&sort_by=title')
       .expect(200)
       .then((response) => {
         expect(response.body.articles.length).toBe(11);
@@ -146,7 +146,7 @@ describe('GET /api/articles?queries', () => {
   });
   test('Returns 400 bad request when order is not ASC, DESC, ASCENDING OR DESCENDING', () => {
     return request(app)
-      .get('/api/articles?topic=mitch&&order=ESC')
+      .get('/api/articles?topic=mitch&order=ESC')
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe('Bad Request');
