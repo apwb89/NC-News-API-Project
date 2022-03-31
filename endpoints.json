@@ -9,9 +9,19 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "GET /api/users": {
+    "description": "serves an array of all usernames",
+    "queries": [], 
+    "exampleResponse": {
+      "usernames": [
+        { "username": "butter_bridge" },
+        { "username": "lurker" }
+      ]
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
@@ -23,5 +33,16 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+  }, 
+  "PATCH /api/articles/:article_id": {
+  },
+  "GET /api/articles/:article_id/comments": {
+  },
+  "POST /api/articles/:article_id/comments": {
+  },
+  "DELETE /api/comments/:comment_id": {
+
   }
 }

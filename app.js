@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 
-const { getTopics, getUsernames, getArticles, getArticleById, getCommentsForArticleById } = require('./controllers/app.controllers')
+const { getTopics, getUsernames, getArticles, getArticleById, getCommentsForArticleById, postCommentByArticleId, deleteCommentById, patchVotesByNum } = require('./controllers/app.controllers')
 
 
 
@@ -16,7 +16,13 @@ app.get('/api/articles', getArticles);
 
 app.get('/api/articles/:article_id', getArticleById);
 
+app.patch('/api/articles/:article_id', patchVotesByNum);
+
 app.get('/api/articles/:article_id/comments', getCommentsForArticleById);
+
+app.post('/api/articles/:article_id/comments', postCommentByArticleId);
+
+app.delete('/api/comments/:comment_id', deleteCommentById);
 
 app.all('*', (req, res) => {
     res.status(404).send({msg: 'Not Found'})
@@ -36,6 +42,14 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
     if(err.msg && err.status === 404) {
         res.status(404).send({msg: err.msg})
+    } else {
+        next(err);
+    }
+})
+
+app.use((err, req, res, next) => {
+    if(err.msg && err.status === 400) {
+        res.status(400).send({msg: err.msg})
     } else {
         next(err);
     }
