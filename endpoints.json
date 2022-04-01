@@ -9,6 +9,12 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "creates a new topic and serves that created topic",
+    "queries": [],
+    "exampleRequestBody" : { "slug": "football", "description": "Footie!" },
+    "exampleResponse": { "slug": "football", "description": "Footie!" }
+  },
   "GET /api/users": {
     "description": "serves an array of all usernames",
     "queries": [],

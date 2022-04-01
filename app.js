@@ -10,7 +10,8 @@ const {
   postCommentByArticleId,
   deleteCommentById,
   patchVotesByNum,
-  getAPIInfo
+  getAPIInfo,
+  postTopic
 } = require('./controllers/app.controllers');
 
 app.use(express.json());
@@ -18,6 +19,8 @@ app.use(express.json());
 app.get('/api', getAPIInfo);
 
 app.get('/api/topics', getTopics);
+
+app.post('/api/topics', postTopic);
 
 app.get('/api/users', getUsernames);
 

@@ -15,6 +15,19 @@ exports.fetchAllTopics = async () => {
   return results.rows;
 };
 
+exports.sendTopic = async (slug, description) => {
+  if (slug && description) {
+    const topic = await db.query(
+      `INSERT INTO topics (slug, description)
+        VALUES ($1, $2) RETURNING *`,
+      [slug, description]
+    );
+    return topic.rows[0];
+  } else {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  }
+}
+
 exports.fetchAllUsernames = async () => {
   const results = await db.query('SELECT username FROM users');
   return results.rows;

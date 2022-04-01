@@ -11,41 +11,41 @@ afterAll(() => db.end());
 describe('GET /api', () => {
   test('Returns JSON object providing info on all endpoints', () => {
     return request(app)
-    .get('/api')
-    .expect(200)
-    .then((response) => {
-      expect(response.body.endpoints).toMatchObject({
-        "GET /api": expect.any(Object)
-        //need better test ?
-      })
-    })
-  })
-})
-
-describe('GET /api/topics', () => {
-    test('Returns an array of topic objects with slug and decription properties', () => {
-      return request(app)
-        .get('/api/topics')
-        .expect(200)
-        .then((response) => {
-          expect(response.body.topics.length).toBe(3);
-          response.body.topics.forEach((topic) => {
-            expect(topic).toMatchObject({
-              slug: expect.any(String),
-              description: expect.any(String),
-            });
-          });
-        });
-    });
-  });
-  test('Returns 404 not found if no topics are found', () => {
-    return request(app)
-      .get('/api/tpoics')
-      .expect(404)
+      .get('/api')
+      .expect(200)
       .then((response) => {
-        expect(response.body.msg).toBe('Not Found');
+        expect(response.body.endpoints).toMatchObject({
+          'GET /api': expect.any(Object),
+          //need better test ?
+        });
       });
   });
+});
+
+describe('GET /api/topics', () => {
+  test('Returns an array of topic objects with slug and decription properties', () => {
+    return request(app)
+      .get('/api/topics')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.topics.length).toBe(3);
+        response.body.topics.forEach((topic) => {
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
+      });
+  });
+});
+test('Returns 404 not found if no topics are found', () => {
+  return request(app)
+    .get('/api/tpoics')
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe('Not Found');
+    });
+});
 
 describe('GET /api/users', () => {
   describe('Functionality', () => {
@@ -163,7 +163,7 @@ describe('GET /api/articles?queries', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad Request');
       });
-  })
+  });
   test('Returns 400 bad request when sort_by is not from existing column names', () => {
     return request(app)
       .get('/api/articles?sort_by=auhtor')
@@ -171,7 +171,7 @@ describe('GET /api/articles?queries', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad Request');
       });
-  })
+  });
 });
 
 describe('GET /api/articles/:article_id', () => {
@@ -256,8 +256,50 @@ describe('GET /api/articles/:article_id/comments', () => {
   });
 });
 
+describe('POST /api/topics', () => {
+  test('Takes an object with slug and description properties and creates a new topic', () => {
+    return request(app)
+      .post('/api/topics')
+      .send({ slug: 'tests', description: 'example text' })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.topic).toMatchObject({
+          slug: 'tests',
+          description: 'example text',
+        });
+      });
+  });
+  test('returns 400 bad request if keys are wrong', () => {
+    return request(app)
+      .post('/api/topics')
+      .send({ sulg: 'topic', description: 'test' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+    })
+    test('returns 400 bad request if body slug or description is empty', () => {
+      return request(app)
+        .post('/api/topics')
+        .send({ slug: '', description: 'test' })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request');
+        });
+    });
+    test('returns 400 bad request if values are the wrong data type', () => {
+      return request(app)
+        .post('/api/topics')
+        .send({ slug: 'slug', description: 5 })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request');
+        });
+    });
+});
+
 describe('POST /api/articles/:article_id/comments', () => {
-  test('takes an object with name and body properties and posts a comment to the article of id chosen', () => {
+  test('Takes an object with name and body properties and posts a comment to the article of id chosen', () => {
     return request(app)
       .post('/api/articles/4/comments')
       .send({ name: 'butter_bridge', body: 'test' })
@@ -420,4 +462,3 @@ describe('PATCH /api/articles/:article_id  -- Votes', () => {
       });
   });
 });
-
