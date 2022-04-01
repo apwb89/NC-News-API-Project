@@ -3,6 +3,6 @@
 
 
 SELECT *
-FROM articles;
+FROM topics;
 
 --$1

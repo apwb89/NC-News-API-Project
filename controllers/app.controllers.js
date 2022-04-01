@@ -8,7 +8,8 @@ const {
   removeCommentById,
   checkUserExistsByName,
   updateVotes,
-  fetchAPIInfo
+  fetchAPIInfo,
+  sendTopic
 } = require('../models/app.models');
 
 
@@ -30,6 +31,25 @@ exports.getTopics = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.postTopic = async (req, res, next) => {
+  try {
+    if (
+      !req.body.slug ||
+      !req.body.description ||
+      typeof req.body.slug !== 'string' ||
+      typeof req.body.description !== 'string'
+    ) {
+      return next({ status: 400, msg: 'Bad Request' });
+    }
+
+    const { slug, description } = req.body
+    const newTopic = await sendTopic(slug, description);
+    res.status(201).send({topic: newTopic})
+  } catch(err) {
+    next(err);
+  }
+}
 
 exports.getUsernames = async (req, res, next) => {
   try {
