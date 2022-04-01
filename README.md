@@ -7,6 +7,13 @@ Backend project for reading and posting articles and comments.
 ## Hosted at 
 [https://guarded-reaches-90042.herokuapp.com/api](https://guarded-reaches-90042.herokuapp.com/api)
 
+## Minimums
+
+```bash
+node: '17.4.0'
+psql: '12.9'
+```
+
 ## Clone Repo
 
 Fork github repo then in your directory of choice use command:
