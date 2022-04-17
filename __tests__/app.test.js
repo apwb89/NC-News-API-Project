@@ -68,25 +68,26 @@ describe('GET /api/users', () => {
 describe('GET /api/users/:username', () => {
   test('Returns a user object with username, avatar_url and name properties', () => {
     return request(app)
-    .get('/api/users/butter_bridge')
-    .expect(200)
-    .then((response) => {
-      expect(response.body.user).toEqual(({
-        username: 'butter_bridge',
-        avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
-        name: 'jonny'
-      }))
-    })
-  })
+      .get('/api/users/butter_bridge')
+      .expect(200)
+      .then((response) => {
+        expect(response.body.user).toEqual({
+          username: 'butter_bridge',
+          avatar_url:
+            'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+          name: 'jonny',
+        });
+      });
+  });
   test('Returns 404 not found if username does not exist', () => {
     return request(app)
-    .get('/api/users/bad')
-    .expect(404)
-    .then((response) => {
-      expect(response.body.msg).toBe('Not Found');
-    })
-  })
-})
+      .get('/api/users/bad')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+});
 
 describe('GET /api/articles', () => {
   test('Returns and array of article objects, with author(username), title, article_id, topic, created_at, votes and comment_count properties, sorted by date desc', () => {
@@ -235,6 +236,102 @@ describe('GET /api/articles/:article_id', () => {
   });
 });
 
+describe('POST /api/articles', () => {
+  test('Posts an article which requires author(username), title, body and topic properties. Returns the posted article with added article_id, votes, created_at and comment_count properties', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'rogersop',
+        title: 'testTitle',
+        body: 'testBody',
+        topic: 'mitch',
+      })
+      .expect(201)
+      .then((response) => {
+        expect(response.body.article).toMatchObject({
+          author: 'rogersop',
+          title: 'testTitle',
+          body: 'testBody',
+          topic: 'mitch',
+          article_id: 13,
+          votes: 0,
+          created_at: expect.any(String)
+        });
+      });
+  });
+  test('Returns 404 if topic is not in topics table', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'rogersop',
+        title: 'testTitle',
+        body: 'testBody',
+        topic: 'badTopic',
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      })
+  })
+  test('Returns 404 is author is not in users table', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'badAuthor',
+        title: 'testTitle',
+        body: 'testBody',
+        topic: 'mitch',
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found");
+      })
+  })
+  test('Returns 400 bad request if any key is incorrect', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        authlor: 'rogersop',
+        title: 'testTitle',
+        body: 'testBody',
+        topic: 'mitch',
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      })
+  })
+  test('Returns 400 bad request if title is empty', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'rogersop',
+        title: '',
+        body: 'testBody',
+        topic: 'mitch',
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      })
+  })
+  test('Returns 400 bad request if body is empty', () => {
+    return request(app)
+      .post('/api/articles')
+      .send({
+        author: 'rogersop',
+        title: 'testTitle',
+        body: '',
+        topic: 'mitch',
+      })
+      .expect(400)
+      .then((response) => {
+
+        expect(response.body.msg).toBe("Bad Request");
+      })
+  })
+});
+
 describe('GET /api/articles/:article_id/comments', () => {
   test('Returns an array of comment objects for the given article_id, containing comment_id, votes, created_at, author (username from users table, body', () => {
     return request(app)
@@ -300,25 +397,25 @@ describe('POST /api/topics', () => {
       .then((response) => {
         expect(response.body.msg).toBe('Bad Request');
       });
-    })
-    test('returns 400 bad request if body slug or description is empty', () => {
-      return request(app)
-        .post('/api/topics')
-        .send({ slug: '', description: 'test' })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe('Bad Request');
-        });
-    });
-    test('returns 400 bad request if values are the wrong data type', () => {
-      return request(app)
-        .post('/api/topics')
-        .send({ slug: 'slug', description: 5 })
-        .expect(400)
-        .then((response) => {
-          expect(response.body.msg).toBe('Bad Request');
-        });
-    });
+  });
+  test('returns 400 bad request if body slug or description is empty', () => {
+    return request(app)
+      .post('/api/topics')
+      .send({ slug: '', description: 'test' })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+  test('returns 400 bad request if values are the wrong data type', () => {
+    return request(app)
+      .post('/api/topics')
+      .send({ slug: 'slug', description: 5 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
 });
 
 describe('POST /api/articles/:article_id/comments', () => {
@@ -388,49 +485,49 @@ describe('POST /api/articles/:article_id/comments', () => {
 describe('PATCH /api/comments/:comment_id', () => {
   test('Increments votes property on comment of given id and returns comment object', () => {
     return request(app)
-    .patch('/api/comments/1')
-    .send({ inc_votes: 1 })
-    .expect(200)
-    .then((response) => {
-      expect(response.body.comment).toMatchObject({
-        comment_id: 1,
-        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
-        votes: 17
-      })
-    })
-  })
+      .patch('/api/comments/1')
+      .send({ inc_votes: 1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment).toMatchObject({
+          comment_id: 1,
+          body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          votes: 17,
+        });
+      });
+  });
   test('correctly updates votes when inc_votes is negative', () => {
-   return request(app)
-   .patch('/api/comments/2')
-   .send({inc_votes: -1})
-   .expect(200)
-   .then((response) => {
-     expect(response.body.comment).toMatchObject({
-       comment_id: 2,
-       body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
-       votes: 13
-     })
-   })
+    return request(app)
+      .patch('/api/comments/2')
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comment).toMatchObject({
+          comment_id: 2,
+          body: 'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+          votes: 13,
+        });
+      });
   });
   test('returns 404 not found if comment does not exist', () => {
     return request(app)
-    .patch('/api/comments/100')
-    .send({inc_votes: 1})
-    .expect(404)
-    .then((response) => {
-      expect(response.body.msg).toBe('Not Found');
-    })
+      .patch('/api/comments/100')
+      .send({ inc_votes: 1 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
   });
   test('returns 400 bad request if inc_votes key is missing', () => {
     return request(app)
-    .patch('/api/comments/1')
-    .send({})
-    .expect(400)
-    .then((response) => {
-      expect(response.body.msg).toBe('Bad Request')
-    })
+      .patch('/api/comments/1')
+      .send({})
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
   });
-})
+});
 
 describe('DELETE /api/comments/:comment_id', () => {
   test('Deletes a comment of the given id', () => {
@@ -544,9 +641,9 @@ describe('DELETE /api/articles/:article_id', () => {
           expect(testRes.rows).not.toContain({
             comment_id: 1,
             title: 'Living in the shadow of a great man  ',
-            topic: "mitch",
+            topic: 'mitch',
             author: 'butter_bridge',
-            body: "I find this existence challenging",      
+            body: 'I find this existence challenging',
             votes: 100,
             created_at: '2020-07-09 21:11:00',
           });
@@ -569,5 +666,4 @@ describe('DELETE /api/articles/:article_id', () => {
         expect(response.body.msg).toBe('Bad Request');
       });
   });
-  })
-
+});

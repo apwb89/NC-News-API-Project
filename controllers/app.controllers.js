@@ -4,6 +4,7 @@ const {
   fetchUserByUsername,
   fetchArticleFromDbById,
   fetchAllArticles,
+  createArticle,
   fetchCommentsForArticle,
   removeArticleById,
   sendCommentByArticleId,
@@ -12,19 +13,18 @@ const {
   checkUserExistsByName,
   updateArticleVotes,
   fetchAPIInfo,
-  sendTopic
+  sendTopic,
 } = require('../models/app.models');
-
 
 exports.getAPIInfo = async (req, res, next) => {
   try {
     const apiInfo = await fetchAPIInfo();
     const parsedInfo = JSON.parse(apiInfo, null, 2);
-    res.status(200).send({endpoints: parsedInfo})
-  } catch(err) {
+    res.status(200).send({ endpoints: parsedInfo });
+  } catch (err) {
     next(err);
   }
-}
+};
 
 exports.getTopics = async (req, res, next) => {
   try {
@@ -46,13 +46,13 @@ exports.postTopic = async (req, res, next) => {
       return next({ status: 400, msg: 'Bad Request' });
     }
 
-    const { slug, description } = req.body
+    const { slug, description } = req.body;
     const newTopic = await sendTopic(slug, description);
-    res.status(201).send({topic: newTopic})
-  } catch(err) {
+    res.status(201).send({ topic: newTopic });
+  } catch (err) {
     next(err);
   }
-}
+};
 
 exports.getUsernames = async (req, res, next) => {
   try {
@@ -67,11 +67,11 @@ exports.getUserByUsername = async (req, res, next) => {
   try {
     const { username } = req.params;
     const user = await fetchUserByUsername(username);
-    res.status(200).send({user});
+    res.status(200).send({ user });
   } catch (err) {
     next(err);
   }
-}
+};
 
 exports.getArticles = async (req, res, next) => {
   try {
@@ -95,6 +95,36 @@ exports.getArticleById = async (req, res, next) => {
   try {
     const article = await fetchArticleFromDbById(article_id);
     res.status(200).send({ article });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.postArticle = async (req, res, next) => {
+  try {
+    if (
+      !req.body.author ||
+      !req.body.title ||
+      !req.body.body ||
+      !req.body.topic ||
+      typeof req.body.author !== 'string' ||
+      typeof req.body.title !== 'string' ||
+      typeof req.body.body !== 'string' ||
+      typeof req.body.topic !== 'string'
+    ) {
+      return next({ status: 400, msg: 'Bad Request' });
+    }
+
+    const { author, title, body, topic } = req.body;
+    const topics = await fetchAllTopics();
+    await fetchUserByUsername(author)
+    
+    if(!topics.map(x => x.slug).includes(topic)) {
+      return next({status: 404, msg: "Not Found"})
+    } else {
+      const newArticle = await createArticle(author, title, body, topic);
+      res.status(201).send({ article: newArticle });
+    }
   } catch (err) {
     next(err);
   }
@@ -165,7 +195,7 @@ exports.deleteArticleById = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-}
+};
 
 exports.patchCommentVotesByNum = async (req, res, next) => {
   try {
@@ -174,14 +204,17 @@ exports.patchCommentVotesByNum = async (req, res, next) => {
     } else {
       const { comment_id } = req.params;
       const { inc_votes } = req.body;
-  
-      const patchedComment = await updateCommentVotesByNum(comment_id, inc_votes);
-      res.status(200).send({comment: patchedComment});
+
+      const patchedComment = await updateCommentVotesByNum(
+        comment_id,
+        inc_votes
+      );
+      res.status(200).send({ comment: patchedComment });
     }
-} catch (err) {
-  next(err);
-}
-}
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.deleteCommentById = async (req, res, next) => {
   const { comment_id } = req.params;

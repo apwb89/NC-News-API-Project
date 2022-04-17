@@ -128,6 +128,19 @@ exports.fetchCommentsForArticle = async (articleId) => {
   return results.rows;
 };
 
+exports.createArticle = async (author, title, body, topic) => {
+  if (author && title && body && topic) {
+    const article = await db.query(
+      `INSERT INTO articles (author, title, body, topic)
+        VALUES ($1, $2, $3, $4) RETURNING *`,
+      [author, title, body, topic]
+    );
+    return article.rows[0];
+  } else {
+    return Promise.reject({ status: 400, msg: 'Bad Request' });
+  }
+}
+
 exports.sendCommentByArticleId = async (articleId, name, body) => {
   if (name && body) {
     const post = await db.query(

@@ -3,6 +3,6 @@
 
 
 SELECT *
-FROM comments;
+FROM articles;
 
 --$1
