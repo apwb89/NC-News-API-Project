@@ -385,6 +385,53 @@ describe('POST /api/articles/:article_id/comments', () => {
   });
 });
 
+describe('PATCH /api/comments/:comment_id', () => {
+  test('Increments votes property on comment of given id and returns comment object', () => {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({ inc_votes: 1 })
+    .expect(200)
+    .then((response) => {
+      expect(response.body.comment).toMatchObject({
+        comment_id: 1,
+        body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        votes: 17
+      })
+    })
+  })
+  test('correctly updates votes when inc_votes is negative', () => {
+   return request(app)
+   .patch('/api/comments/2')
+   .send({inc_votes: -1})
+   .expect(200)
+   .then((response) => {
+     expect(response.body.comment).toMatchObject({
+       comment_id: 2,
+       body: "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+       votes: 13
+     })
+   })
+  });
+  test('returns 404 not found if comment does not exist', () => {
+    return request(app)
+    .patch('/api/comments/100')
+    .send({inc_votes: 1})
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe('Not Found');
+    })
+  });
+  test('returns 400 bad request if inc_votes key is missing', () => {
+    return request(app)
+    .patch('/api/comments/1')
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe('Bad Request')
+    })
+  });
+})
+
 describe('DELETE /api/comments/:comment_id', () => {
   test('Deletes a comment of the given id', () => {
     return request(app)

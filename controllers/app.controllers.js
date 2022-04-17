@@ -6,9 +6,10 @@ const {
   fetchAllArticles,
   fetchCommentsForArticle,
   sendCommentByArticleId,
+  updateCommentVotesByNum,
   removeCommentById,
   checkUserExistsByName,
-  updateVotes,
+  updateArticleVotes,
   fetchAPIInfo,
   sendTopic
 } = require('../models/app.models');
@@ -139,7 +140,7 @@ exports.postCommentByArticleId = async (req, res, next) => {
     .catch(next);
 };
 
-exports.patchVotesByNum = async (req, res, next) => {
+exports.patchArticleVotesByNum = async (req, res, next) => {
   try {
     if (!req.body.inc_votes || typeof req.body.inc_votes !== 'number') {
       return next({ status: 400, msg: 'Bad Request' });
@@ -148,12 +149,28 @@ exports.patchVotesByNum = async (req, res, next) => {
     const { article_id } = req.params;
     const { inc_votes } = req.body;
 
-    const votedArticle = await updateVotes(article_id, inc_votes);
+    const votedArticle = await updateArticleVotes(article_id, inc_votes);
     res.status(200).send({ article: votedArticle });
   } catch (err) {
     next(err);
   }
 };
+
+exports.patchCommentVotesByNum = async (req, res, next) => {
+  try {
+    if (!req.body.inc_votes || typeof req.body.inc_votes !== 'number') {
+      return next({ status: 400, msg: 'Bad Request' });
+    } else {
+      const { comment_id } = req.params;
+      const { inc_votes } = req.body;
+  
+      const patchedComment = await updateCommentVotesByNum(comment_id, inc_votes);
+      res.status(200).send({comment: patchedComment});
+    }
+} catch (err) {
+  next(err);
+}
+}
 
 exports.deleteCommentById = async (req, res, next) => {
   const { comment_id } = req.params;

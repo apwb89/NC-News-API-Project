@@ -8,7 +8,7 @@ const {
 exports.fetchAPIInfo = async () => {
   const apiInfo = await fs.readFile(`${__dirname}/../endpoints.json`, 'utf-8');
   return apiInfo;
-}
+};
 
 exports.fetchAllTopics = async () => {
   const results = await db.query('SELECT * FROM topics;');
@@ -26,7 +26,7 @@ exports.sendTopic = async (slug, description) => {
   } else {
     return Promise.reject({ status: 400, msg: 'Bad Request' });
   }
-}
+};
 
 exports.fetchAllUsernames = async () => {
   const results = await db.query('SELECT username FROM users');
@@ -34,13 +34,15 @@ exports.fetchAllUsernames = async () => {
 };
 
 exports.fetchUserByUsername = async (username) => {
-  const results = await db.query('SELECT * FROM users WHERE username=$1', [username]);
-  if(results.rows.length) {
+  const results = await db.query(`SELECT * FROM users WHERE username=$1`, [
+    username,
+  ]);
+  if (results.rows.length) {
     return results.rows[0];
   } else {
-    return Promise.reject({status: 404, msg: 'Not Found'})
+    return Promise.reject({ status: 404, msg: 'Not Found' });
   }
-}
+};
 
 exports.fetchArticleFromDbById = async (articleId) => {
   const results = await db.query(
@@ -74,13 +76,13 @@ exports.fetchAllArticles = async (
   FULL OUTER JOIN comments 
   ON articles.article_id = comments.article_id`;
 
-  const columnTitleQuery = await db.query(`SELECT * FROM articles;`)
+  const columnTitleQuery = await db.query(`SELECT * FROM articles;`);
   const validTopics = [];
-  columnTitleQuery.rows.forEach(article => {
-    if(!validTopics.includes(article.topic)) {
+  columnTitleQuery.rows.forEach((article) => {
+    if (!validTopics.includes(article.topic)) {
       validTopics.push(article.topic);
     }
-  })
+  });
 
   if (topic) {
     if (!validTopics.includes(topic)) {
@@ -92,9 +94,17 @@ exports.fetchAllArticles = async (
 
   query += ` GROUP BY articles.article_id`;
 
-  const validSortBy = ['article_id', 'title', 'topic', 'author', 'body', 'created_at', 'votes'];
+  const validSortBy = [
+    'article_id',
+    'title',
+    'topic',
+    'author',
+    'body',
+    'created_at',
+    'votes',
+  ];
 
-  if(!validSortBy.includes(sort_by)) {
+  if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: 'Bad Request' });
   } else {
     query += ` ORDER BY articles.${sort_by}`;
@@ -142,7 +152,7 @@ exports.checkUserExistsByName = async (username) => {
   }
 };
 
-exports.updateVotes = async (articleId, incVotes) => {
+exports.updateArticleVotes = async (articleId, incVotes) => {
   let currentVotes = await db.query(
     `SELECT votes FROM articles WHERE article_id = $1`,
     [articleId]
@@ -158,6 +168,26 @@ exports.updateVotes = async (articleId, incVotes) => {
   let update = await db.query(
     `UPDATE articles SET votes = $1 WHERE article_id = $2 RETURNING *`,
     [newVoteTotal, articleId]
+  );
+  return update.rows[0];
+};
+
+exports.updateCommentVotesByNum = async (commentId, inc_votes) => {
+  let currentVotes = await db.query(
+    `SELECT votes FROM comments WHERE comment_id=$1`,
+    [commentId]
+  );
+    
+  if (!currentVotes.rows.length) {
+    return Promise.reject({ status: 404, msg: 'Not Found' });
+  }
+
+  currentVotes = currentVotes.rows[0].votes;
+  const newVoteTotal = currentVotes + inc_votes;
+
+  let update = await db.query(
+    `UPDATE comments SET votes = $1 WHERE comment_id = $2 RETURNING *`,
+    [newVoteTotal, commentId]
   );
   return update.rows[0];
 };
