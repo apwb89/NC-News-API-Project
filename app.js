@@ -5,6 +5,7 @@ const cors = require('cors');
 const {
   getTopics,
   getUsernames,
+  getUserByUsername,
   getArticles,
   getArticleById,
   getCommentsForArticleById,
@@ -26,6 +27,8 @@ app.get('/api/topics', getTopics);
 app.post('/api/topics', postTopic);
 
 app.get('/api/users', getUsernames);
+
+app.get('/api/users/:username', getUserByUsername);
 
 app.get('/api/articles', getArticles);
 

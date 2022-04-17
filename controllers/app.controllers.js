@@ -1,6 +1,7 @@
 const {
   fetchAllTopics,
   fetchAllUsernames,
+  fetchUserByUsername,
   fetchArticleFromDbById,
   fetchAllArticles,
   fetchCommentsForArticle,
@@ -59,6 +60,16 @@ exports.getUsernames = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getUserByUsername = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    const user = await fetchUserByUsername(username);
+    res.status(200).send({user});
+  } catch (err) {
+    next(err);
+  }
+}
 
 exports.getArticles = async (req, res, next) => {
   try {

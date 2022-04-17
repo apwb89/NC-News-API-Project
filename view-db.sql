@@ -3,6 +3,6 @@
 
 
 SELECT *
-FROM topics;
+FROM users;
 
 --$1
