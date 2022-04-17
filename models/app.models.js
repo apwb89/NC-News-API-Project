@@ -33,6 +33,15 @@ exports.fetchAllUsernames = async () => {
   return results.rows;
 };
 
+exports.fetchUserByUsername = async (username) => {
+  const results = await db.query('SELECT * FROM users WHERE username=$1', [username]);
+  if(results.rows.length) {
+    return results.rows[0];
+  } else {
+    return Promise.reject({status: 404, msg: 'Not Found'})
+  }
+}
+
 exports.fetchArticleFromDbById = async (articleId) => {
   const results = await db.query(
     `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.body, articles.votes, COUNT(articles.article_id)

@@ -65,6 +65,29 @@ describe('GET /api/users', () => {
   });
 });
 
+describe('GET /api/users/:username', () => {
+  test('Returns a user object with username, avatar_url and name properties', () => {
+    return request(app)
+    .get('/api/users/butter_bridge')
+    .expect(200)
+    .then((response) => {
+      expect(response.body.user).toEqual(({
+        username: 'butter_bridge',
+        avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+        name: 'jonny'
+      }))
+    })
+  })
+  test('Returns 404 not found if username does not exist', () => {
+    return request(app)
+    .get('/api/users/bad')
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe('Not Found');
+    })
+  })
+})
+
 describe('GET /api/articles', () => {
   test('Returns and array of article objects, with author(username), title, article_id, topic, created_at, votes and comment_count properties, sorted by date desc', () => {
     return request(app)
