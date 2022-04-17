@@ -532,3 +532,42 @@ describe('PATCH /api/articles/:article_id  -- Votes', () => {
       });
   });
 });
+
+describe('DELETE /api/articles/:article_id', () => {
+  test('Deletes the article of given ID', () => {
+    return request(app)
+      .del('/api/articles/1')
+      .expect(204)
+      .then((response) => {
+        return db.query(`SELECT * FROM articles;`).then((testRes) => {
+          expect(testRes.rows.length).toBe(11);
+          expect(testRes.rows).not.toContain({
+            comment_id: 1,
+            title: 'Living in the shadow of a great man  ',
+            topic: "mitch",
+            author: 'butter_bridge',
+            body: "I find this existence challenging",      
+            votes: 100,
+            created_at: '2020-07-09 21:11:00',
+          });
+        });
+      });
+  });
+  test('Returns 404 not found if article doesnt exist', () => {
+    return request(app)
+      .del('/api/articles/100')
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe('Not Found');
+      });
+  });
+  test('Returns 400 bad request if a non integer is given as article_id', () => {
+    return request(app)
+      .del('/api/articles/bad')
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe('Bad Request');
+      });
+  });
+  })
+

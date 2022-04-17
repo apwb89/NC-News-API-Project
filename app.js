@@ -10,6 +10,7 @@ const {
   getArticleById,
   getCommentsForArticleById,
   postCommentByArticleId,
+  deleteArticleById,
   patchCommentVotesByNum,
   deleteCommentById,
   patchArticleVotesByNum,
@@ -37,7 +38,7 @@ app.get('/api/articles/:article_id', getArticleById);
 
 app.patch('/api/articles/:article_id', patchArticleVotesByNum);
 
-
+app.delete('/api/articles/:article_id', deleteArticleById);
 
 app.get('/api/articles/:article_id/comments', getCommentsForArticleById);
 
