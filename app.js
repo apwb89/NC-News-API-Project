@@ -37,6 +37,8 @@ app.get('/api/articles/:article_id', getArticleById);
 
 app.patch('/api/articles/:article_id', patchArticleVotesByNum);
 
+
+
 app.get('/api/articles/:article_id/comments', getCommentsForArticleById);
 
 app.post('/api/articles/:article_id/comments', postCommentByArticleId);
