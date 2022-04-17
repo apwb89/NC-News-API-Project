@@ -5,6 +5,7 @@ const {
   fetchArticleFromDbById,
   fetchAllArticles,
   fetchCommentsForArticle,
+  removeArticleById,
   sendCommentByArticleId,
   updateCommentVotesByNum,
   removeCommentById,
@@ -155,6 +156,16 @@ exports.patchArticleVotesByNum = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.deleteArticleById = async (req, res, next) => {
+  const { article_id } = req.params;
+  try {
+    const delArticle = await removeArticleById(article_id);
+    res.status(204).send({});
+  } catch (err) {
+    next(err);
+  }
+}
 
 exports.patchCommentVotesByNum = async (req, res, next) => {
   try {

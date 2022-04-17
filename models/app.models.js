@@ -192,6 +192,24 @@ exports.updateCommentVotesByNum = async (commentId, inc_votes) => {
   return update.rows[0];
 };
 
+exports.removeArticleById = async (articleId) => {
+  const checkId = await db.query(
+    `SELECT * FROM articles WHERE article_id = $1;`,
+    [articleId]
+  );
+  if (checkId.rows.length) {
+    const deleteCommentsForArticle = await db.query(`DELETE FROM comments WHERE article_id = $1`, [articleId])
+
+    const delArticle = await db.query(
+      `DELETE FROM articles WHERE article_id = $1;`,
+      [articleId]
+    );
+    return Promise.resolve();
+  } else {
+    return Promise.reject({ status: 404, msg: 'Not Found' });
+  }
+};
+
 exports.removeCommentById = async (commentId) => {
   const checkId = await db.query(
     `SELECT * FROM comments WHERE comment_id = $1;`,
