@@ -75,7 +75,7 @@ exports.getUserByUsername = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
   try {
-    const { sort_by, order, topic } = req.query;
+    const { sort_by, order, topic, author } = req.query;
 
     if (order) {
       const validOrders = ['ASC', 'ASCENDING', 'DESC', 'DESCENDING'];
@@ -83,7 +83,7 @@ exports.getArticles = async (req, res, next) => {
         return next({ status: 400, msg: 'Bad Request' });
     }
 
-    const articles = await fetchAllArticles(sort_by, order, topic);
+    const articles = await fetchAllArticles(sort_by, order, topic, author);
     res.status(200).send({ articles });
   } catch (err) {
     next(err);

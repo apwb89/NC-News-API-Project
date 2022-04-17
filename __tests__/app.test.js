@@ -196,6 +196,14 @@ describe('GET /api/articles?queries', () => {
         expect(response.body.msg).toBe('Bad Request');
       });
   });
+  test('Can filter by author', () => {
+    return request(app)
+    .get('/api/articles?author=rogersop')
+    .expect(200)
+    .then((response) => {
+      expect(response.body.articles.length).toBe(3)
+    })
+  })
 });
 
 describe('GET /api/articles/:article_id', () => {

@@ -68,7 +68,8 @@ exports.fetchArticleFromDbById = async (articleId) => {
 exports.fetchAllArticles = async (
   sort_by = 'created_at',
   order = 'DESC',
-  topic
+  topic,
+  author
 ) => {
   let query = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.body, articles.votes, COUNT(articles.article_id)
   AS comment_count 
@@ -83,12 +84,28 @@ exports.fetchAllArticles = async (
       validTopics.push(article.topic);
     }
   });
+  const validAuthors = [];
+  columnTitleQuery.rows.forEach((article) => {
+    if (!validAuthors.includes(article.author)) {
+      validAuthors.push(article.author);
+    }
+  });
+
+  if(topic || author) {
+    query += ' WHERE';
+  }
 
   if (topic) {
     if (!validTopics.includes(topic)) {
       return Promise.reject({ status: 400, msg: 'Bad Request' });
     } else {
-      query += ` WHERE articles.topic='${topic}'`;
+      query += ` articles.topic='${topic}'`;
+    }
+  } else if (author) {
+    if (!validAuthors.includes(author)) {
+      return Promise.reject({ status: 400, msg: 'Bad Request' });
+    } else {
+      query += ` articles.author='${author}'`;
     }
   }
 
