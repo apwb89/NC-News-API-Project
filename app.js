@@ -8,6 +8,7 @@ const {
   getUserByUsername,
   getArticles,
   getArticleById,
+  postArticle,
   getCommentsForArticleById,
   postCommentByArticleId,
   deleteArticleById,
@@ -35,6 +36,8 @@ app.get('/api/users/:username', getUserByUsername);
 app.get('/api/articles', getArticles);
 
 app.get('/api/articles/:article_id', getArticleById);
+
+app.post('/api/articles', postArticle);
 
 app.patch('/api/articles/:article_id', patchArticleVotesByNum);
 
