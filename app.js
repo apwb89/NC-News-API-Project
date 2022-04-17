@@ -10,8 +10,9 @@ const {
   getArticleById,
   getCommentsForArticleById,
   postCommentByArticleId,
+  patchCommentVotesByNum,
   deleteCommentById,
-  patchVotesByNum,
+  patchArticleVotesByNum,
   getAPIInfo,
   postTopic
 } = require('./controllers/app.controllers');
@@ -34,11 +35,13 @@ app.get('/api/articles', getArticles);
 
 app.get('/api/articles/:article_id', getArticleById);
 
-app.patch('/api/articles/:article_id', patchVotesByNum);
+app.patch('/api/articles/:article_id', patchArticleVotesByNum);
 
 app.get('/api/articles/:article_id/comments', getCommentsForArticleById);
 
 app.post('/api/articles/:article_id/comments', postCommentByArticleId);
+
+app.patch('/api/comments/:comment_id', patchCommentVotesByNum);
 
 app.delete('/api/comments/:comment_id', deleteCommentById);
 
